@@ -1,5 +1,3 @@
-Here you can say lots of fun things about your site.
+Hi, my name is Tony M. I am a visually impaired software engineer specializing in Machine Learning. I don't rely on eyesight in my work and I use NVDA screenreader exclusively.
 
-Maybe say a some things about yourself.
-
-Or maybe what you plan to blog about.
+I am planning to share  tips and tricks that I find useful in my work - hopefully they might help other visually impaired people to use computer  more effectively.
