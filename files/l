@@ -1,0 +1,6 @@
+#!/bin/bash
+
+tmp=`mktemp`
+tee $tmp
+mv $tmp /home/tony/.transfer/
+rm $tmp
