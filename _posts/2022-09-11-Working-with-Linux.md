@@ -8,6 +8,17 @@ We will look at two possible scenarios of working with Linux environment:
 * WSL or WSL2 are solutions developed by Microsoft that allow you to run virtual Linux environment on your Windows computer. They are really good if you want to learn Linux or when you need to use some Linux commands on Windows.
 * Connecting to a remote Linux server via SSH. This would allow you to work with real Linux servers and typically this would be required in most industrial jobs these days.
 
+## Terminal/Console programs
+
+* Command prompt
+* PuTTY
+* Windows Terminal
+
+## Linux text editors
+
+* nano for beginners
+* emacs
+
 ## Prompt verbosity
 
 Default Linux prompts tend to be overly verbose, they often include current path or host name. This can be easily dropped by editing `bash` configuration.
@@ -19,7 +30,9 @@ export PS1="LINUX$ "
 
 Or feel free to set the prompt to even shorter word; however please keep in mind, that NVDA doesn't react when too few characters update on the screen, so please make sure that your prompt contains at least 3 non-whitespace characters, otherwise NVDA might not always announce prompt.
 
-If you work with multiple Linux servers, it is a good idea to set distinct prompts on each of them. 
+If you work with multiple Linux servers, it is a good idea to set distinct prompts on each of them.
+
+Whenever you need to figure out current directory or hostname, you can always type commands `pwd` and `hostname` to do so.
 
 ## Capturing and reviewing command output
 
@@ -51,7 +64,9 @@ When you know that command you're going to execute will not produce much output 
 $ clear; ls
 ```
 
-Then you can press `NumPad7` key to jump to the first line of output.
+Then you can press `NumPad7` key to jump to the first line of output. From there you can use NVDA review cursor to read output either by line, by word or by character.
+
+If you wish to copy output, you can use NVDA built-in keystrokes `NVDA+F9` and `NVDA+F10`. Another more convenient way of copying files is provided by [Review Cursor COpier](https://addons.nvda-project.org/addons/reviewCursorCopier.en.html) NVDA add-on.
 
 You can also configure your bash to clear the window automatically before each executed command; in order to do so, add the following line to your bash config file:
 ```
@@ -83,10 +98,54 @@ Basically, we will write two scripts:
 
 #### l-script
 
-https://github.com/mltony/mltony.github.io/blob/gh-pages/PATH_TO_FILE?raw=true
+Download this [sample l-script](https://raw.githubusercontent.com/mltony/mltony.github.io/main/files/l)
+and save it to any directory where `$PATH` can find it. For example, I like to create `scripts` in my home directory and I adjust `$PATH` environment variable in my bash config files like this:
+```
+export PATH=$PATH:$HOME/scripts
+```
 
+Edit your l-script in any text editor and make sure that on line 5 `mv` command moves into transfer directory that exists on your computer.
 
-### Skipping timestamps
+Now, let's make sure that `l`-script can indeed be found in your path by executing:
+```
+$ l
+```
+If it says `command not found` - then it's not in your path - please check `$PATH` environment variable again, or maybe restart bash if you haven't done soe already. If everything works, the script would echo every line you type, and after you're all done (press `Control+D`) it would save the file with random name in transfer directory ready to be picked up by the watchdog.
+
+#### Watchdog
+
+Download [watchdog](https://raw.githubusercontent.com/mltony/mltony.github.io/main/files/watchdog.py) and save it on your Windows computer.
+
+Open `watchdog.py` in any editor and update the following variables in the beginning of the file to point to your server:
+* `SFTP_HOSTNAME`
+* `SFTP_USER`
+* `SFTP_PASSWORD_FILE` or `SFTP_PASSWORD`. Please note that it is not safe to store plain text password, so do it at your own risk. If security is important, please look into SSH public key authentication - it is not covered in this post.
+* `SFTP_DIR` - please make sure this points to exactly the same transfer directory you specified in your l-script in previous section.
+
+Now it is time to run the watchdog! On your Windows computer, execute:
+```
+$ python watchdog.py
+```
+
+If you see the following exception:
+```
+paramiko.ssh_exception.SSHException: No hostkey for host {hostname} found.
+```
+This would mean that you have never connected to given SSH host before and SSH doesn't know whether to trust it or not. In this case, connect to the same SSH host using Windows SSH by typing:
+```
+$ ssh username@hostname
+```
+You would see  a warning message similar to this one:
+```
+The authenticity of host '{hostname} ({IP address})' can't be established.
+ECDSA key fingerprint is SHA256:......
+Are you sure you want to continue connecting (yes/no/[fingerprint])?
+```
+Type `y` and from now on your SSH client has memorized fingerprint of your Linux server, so try running watchdog again, the error must disappear by now.
+
+#### bash shortcut
+
+### Ignoring timestamps
 
 If you are working with Linux backend software, chances are you might have to read server logs, where each line starts with a timestamp. 
 It is very inconvenient to listen to those timestamps, so it is probably a good idea to filter them out from NVDA speech.
@@ -100,7 +159,7 @@ Just configure an audio-rule with regular expression capturing your timestamp an
 ### VSCode
 ### Notepad++ 
 ### sshfs-win and rclone
-### sshfs under WSL2
+### Proper sshfs under WSL2
 
 ## Other tricks
 ### Clipboard pasting
