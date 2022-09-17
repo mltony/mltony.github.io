@@ -10,14 +10,26 @@ We will look at two possible scenarios of working with Linux environment:
 
 ## Terminal/Console programs
 
-* Command prompt
-* PuTTY
-* Windows Terminal
+There are a few options
+
+* Command prompt (cmd.exe) - well-known and bulletproof program that tends to work best. If you are having troubles using any other programs, try good old command prompt.
+* PuTTY - only for SSH connections; accessibility is good.
+* Windows Terminal - recently Microsoft added this revamped terminal that supports tabs. As of the date of writing this post NVDA mostly supports it.
+* SecureCRT is a paid SSH and terminal program. Screenreader users have reported using it successfully, so mentioning it in this list for what it's worth.
 
 ## Linux text editors
 
-* nano for beginners
-* emacs
+Linux comes with a wide variety of terminal-based editors; however their accessibility is not always good enough. Typical problems that seem to plague all of them are:
+* Cursor lag - that is when screenreader announces one line while your cursor is on the next line. This problem gets only more egregious on slower network connections.
+* Inconsistent word navigation: `Control+LeftArrow` and `Control+RIghtArrow` commands use different definition of word in different programs, so that confuses NVDA and either you might hear NVDA repeating the same word twice, or skipping a word.
+* No indentation information - add-ons like [IndentNav]()(https://github.com/mltony/nvda-indent-nav/) don't work there.
+* Screenreaders don't automatically announce editor notifications and this might be confusing for screenreader users.
+
+Therefore I strongly suggest to figure out a way to edit files using any editor running natively on Windows instead of trying to fix Linux editors. However, for quick one-line edits on Linux server it is still beneficial to be familiar with one of Linux editors. Here are some of your options:
+
+* nano - it is good for beginners as it is very simple. Only a few keyboard shortcuts to learn.
+* emacs is a more advanced editor. It is  known for a very weird set of keyboard shortcuts - that is you would need to learn all shortcuts from scratch. But if you decide to learn it, it offers  a good jump start into [EmacsSpeak](https://github.com/tvraman/emacspeak/) - a very interesting emacs-based screenreader solution, that doesn't depend on NVDA.
+* vim - another popular text editor.
 
 ## Prompt verbosity
 
@@ -55,7 +67,7 @@ Alternatively, if you know some of Bash scripting, you can write a short script 
 * save all the output to a temporary file on Windows disk.
 * Open that file in your favorite editor. Hint: in WSL you can call Windows programs directly from Bash scripts as long as you specify full path to their executables.
 
-This way you don't [need to press extra keystrokes - your output will automatically appear in Notepad++.
+This way you don't need to press extra keystrokes - your output will automatically appear in Notepad++.
 
 ### Solution 1: for short output clear your window before each command
 
@@ -64,9 +76,11 @@ When you know that command you're going to execute will not produce much output 
 $ clear; ls
 ```
 
-Then you can press `NumPad7` key to jump to the first line of output. From there you can use NVDA review cursor to read output either by line, by word or by character.
+Then you can press `Shift+NumPad7` key to jump to the first line of output. From there you can use NVDA review cursor to read output either by line, by word or by character.
 
-If you wish to copy output, you can use NVDA built-in keystrokes `NVDA+F9` and `NVDA+F10`. Another more convenient way of copying files is provided by [Review Cursor COpier](https://addons.nvda-project.org/addons/reviewCursorCopier.en.html) NVDA add-on.
+Note that in Windows Terminal `Shift+NumPad7` command would take you all the way to the beginning of text buffer instead of the first visible line; as of this post writing date I am not aware of any workaround, but check with NVDA community.
+
+If you wish to copy output to clipboard, you can use NVDA built-in keystrokes `NVDA+F9` and `NVDA+F10`. Another  convenient way of copying files is provided by [Review Cursor Copier](https://addons.nvda-project.org/addons/reviewCursorCopier.en.html) NVDA add-on.
 
 You can also configure your bash to clear the window automatically before each executed command; in order to do so, add the following line to your bash config file:
 ```
@@ -78,6 +92,8 @@ This line configures a custom binding for `Enter` keystroke: it first sends `Con
 bind '"\C-m": "\C-l \C-h \C-h \C-h \C-h \C-h \C-h \C-h \C-h \C-h \C-h \C-h \C-h \C-h \C-h \C-h \C-h \C-h \C-h \C-h \C-h \C-h \C-h \C-h \C-h \C-h \C-h \C-h \C-h \C-h \C-h \C-h \C-h \C-h \C-h \C-h \C-h \C-h \C-h \C-h \C-h \C-h \C-h \C-h \C-h \C-h \C-h \C-h \C-h \C-h \C-h \C-h \C-h \C-h \C-h \C-h \C-h \C-h \C-h \C-h \C-h \C-h \C-h \C-h \C-h \C-h \C-h \C-h \C-h \C-h \C-h \C-h \C-h \C-h \C-h \C-h \C-h \C-h \C-h \C-h \C-h \C-h \C-h \C-h \C-h \C-h \C-h \C-h \C-h \C-h \C-h \C-h \C-h \C-h \C-h \C-h \C-h \C-h \C-h \C-h \C-h \C-h \C-h \C-h \C-h \C-h \C-h \C-h \C-h \C-h \C-h \C-h \C-h \C-h \C-h \C-h \C-h \C-h \C-h \C-h \C-h \C-h \C-h \C-h \C-h \C-h \C-h \C-h \C-h\C-j"'
 ```
 This advanced binding also sends 128 whitespace keystrokes and then deletes all of them by sending corresponding number of `Backspace` keystrokes. This will cause a slight delay after screen has been cleared, so that NVDA would notice that the screen became blank before output appears. This can be useful when you execute the same command twice in a row, and if you don't have this pause, the second time NVDA doesn't notice any change in screen content so it wouldn't speak anything.
+
+Also, remember to always maximize your window to increase the number of visible lines on the screen.
 
 ### Solution 2: for medium-size output
 
@@ -145,6 +161,19 @@ Type `y` and from now on your SSH client has memorized fingerprint of your Linux
 
 #### bash shortcut
 
+You can assign a keyboard shortcut in your bash configuration to execute current command with input redirection to l-script. Add this line to your bash config file:
+```
+bind '"\e[24~": "\e[4~ |&l \n"'
+```
+
+This defines binding for F12 key, and once you press it, bash will seimulate the following keystrokes:
+* Press `End` key,
+* Press spacebar,
+* Type `|&l`
+* and finally, press `Enter` to actually execute command.
+
+With this configuration you can type a command and then run it with `F12` instead of `Enter` to send its output to your local Notepad++.
+
 ### Ignoring timestamps
 
 If you are working with Linux backend software, chances are you might have to read server logs, where each line starts with a timestamp. 
@@ -155,13 +184,65 @@ Just configure an audio-rule with regular expression capturing your timestamp an
 
 ## Accessing and editing remote files 
 
-### Linux editors
+When working with a large project, chances are you would want your source code to reside on Linux server so that you can build and run it. This poses a question: how to edit files that are located on a Linux server? There are many options to choose from, each of them having their own pros and cons.
+
+### Linux text editors
+
+A few popular Linux editors are mentioned above in this note. Any of them can run inside your SSH session. However, using them with a screenreader seems to be inconvenient at best, so I wouldn't recommend to use them except for quick 1 line edits.
+
 ### VSCode
-### Notepad++ 
-### sshfs-win and rclone
+
+Microsoft Visual Studio Code (VSCode) has already become de facto standard of IDE for all kinds of software development. And the good news is that it works great with all major screenreaders. It also supports remote development over SSH, which makes it the best option for developing on Linux servers.
+
+You can read more about VSCode [accessibility](https://code.visualstudio.com/docs/editor/accessibility) and [remote development over SSH](https://code.visualstudio.com/docs/remote/ssh).
+
+As of the date of writing this post, all the steps required to set up VSCode to work with a remote Linux server are fully accessible with NVDA. If you are stuck in any step, feel free to ask at [program-l mailing list](program-l@freelists.org).
+
+### WinSCP and other SFTP clients
+
+There are a bunch of SFTP clients for Windows, such as:
+* [WinSCP](https://winscp.net/),
+* (FileZilla)[https://filezilla-project.org/],
+* [CyberDuck](https://cyberduck.io/).
+
+As of the date of writing this post, WinSCP is fully accessible; I cannot comment on accessibility of other clients.
+
+In general the advantage of SFTP clients is that they tend to work very reliably and they are easy to set up. The downside is that you would be stuck in a cycle of download file, edit file, upload it back, which gets very tedious and confusing if you have more than just a single file to edit.
+
+### Mounting SSHFS on Windows: SSHFS-win , rClone, SFTP Drive
+
+[SSHFS](https://github.com/libfuse/sshfs) is a popular Linux tool that allows you to mount file system of a remote machine locally. It doesn't work on Windows, however, there are a few good alternatives for Windows:
+
+* [SSHFS-win](https://github.com/winfsp/sshfs-win) is a Windows port of SSHFS and it is fully accessible -since it can be fully configured from command line. I recommend to start with it since it tends to work well for me. Excellent documentation on its github page. Its main downside is limited options for SSH authentication: it only supports password authentication and key-based authentication without passphrase. 
+
+* [RClone](https://rclone.org/) positions itself as file synchronization tool, however among other features it can also mount remote SFTP drives. For more information, check out its [mount command](https://rclone.org/commands/rclone_mount/). It is also fully accessible and can be configured straight from command line. It appears that it can integrate with Windows SSH agent for passpharse key authentication, however, I can't speak about accessibility of that solution. Downside: RClone appears to be pretty slow compared to other SSHFS solutions.
+
+* [SFTP Drive](https://www.nsoftware.com/sftp/drive/) is a commercial tool for mounting remote SSH file systems; but it is free for personal use. User interface is mostly accessible, never mind a few minor glitches.
+
 ### Proper sshfs under WSL2
+
+Now if none of SSHFS solutions mentioned in the previous section work for you and you are not afraid configuring Linux services, you can try to set up proper SSHFS that is running inside WSL2 container. Please note that this will only work in WSL2 and not in WSL1, since WSL1 is not emulating the entire Linux kernel. Alternatively, you can run virtual Linux in any other virtualization software, such as VMWare Player or VirtualBox, however WSL2 offers a straightforward bash command line and therefore is the most convenient option.
+
+Please follow [these instructions](https://tanat44.github.io/post/2021-09-13-wsl2-sshfs.html) to enable SSHFS and access it from Windows.
+
+### Configuring Samba/SMB server
+
+This option is again only for those who are not afraid of configuring Linux servers. 
+SMB is a network file protocol used for Windows file sharing - that is when you type address like `\\host_name\share_name\file.txt` - under the hood you are requesting a file over SMB.
+Samba is an open-source implementation of SMB server and client.
+
+Here is a good [samba tutorial for Debian/Ubuntu](https://ubuntu.com/tutorials/install-and-configure-samba) - or you can find another tutorial for your favorite  flavor of Linux.
+### Notepad++ 
+
+Notepad++ has [NppFTP](https://ashkulz.github.io/NppFTP/) plugin that supports many protocols, including SFTP. So in theory it should allow editing files directly on remote Linux server. However, I found its configuration window to be not accessible with NVDA, so sighted help will be required to configure it.
+
+### rsync
+
 
 ## Other tricks
 ### Clipboard pasting
 ### Editing command line
+### Other features of Console Toolkit
 ### tmux
+
+## Appendix: SSH for dummies
