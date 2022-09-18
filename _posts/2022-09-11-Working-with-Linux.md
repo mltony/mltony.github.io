@@ -1,6 +1,7 @@
 # Working with Linux using NVDA
 This post contains many tips and tricks that I found to be useful that boost my productivity when working with remote Linux servers.
-This post is not a tutorial for beginners on how to use Linux; it requires some knowledge of Linux basics. If you are new to Linux, please find a Linux tutorial  for beginners.
+This is not a tutorial for beginners on how to use Linux; it requires some knowledge of Linux basics. If you are new to Linux, please find a Linux tutorial  for beginners.
+All the tricks mentioned below would work well with NVDA screenreader, however if you use an alternative screenreader, feel free to read as well as many of the tricks are screenreader-agnostic.
 
 ## Scenarios
 
@@ -202,7 +203,7 @@ As of the date of writing this post, all the steps required to set up VSCode to 
 
 There are a bunch of SFTP clients for Windows, such as:
 * [WinSCP](https://winscp.net/),
-* (FileZilla)[https://filezilla-project.org/],
+* [FileZilla](https://filezilla-project.org/),
 * [CyberDuck](https://cyberduck.io/).
 
 As of the date of writing this post, WinSCP is fully accessible; I cannot comment on accessibility of other clients.
@@ -313,3 +314,97 @@ You can still access first lines in tmux buffer by pressing `Control+B PageUp`, 
 However, given all possible ways to capture command output that I listed in this note above, the advantages of tmux sure enough outweigh this downside.
 
 ### Appendix: SSH for dummies
+
+This is not SSH tutorial. If you are new to SSH, please find a tutorial on the Internet. This section describes some features of SSH that might come in quite handy when using SSH with a screenreader.
+
+### SSH configuration
+
+You should know where ssh stores its configuration files:
+* for Windows SSH: `C:\Users\%USERNAME%\.ssh\`.
+* For WSL: `/home/$USER/.ssh` or equivalently `~/.ssh`.
+
+It is very important to understand which version of SSH you are working with and where does it store configuration. 
+For example, VSCode internally uses Windows SSH, so if your Linux server needs public key or a certificate to connect to, please make sure that it is install in Windows SSH configuration directory.
+
+In some cases it would be desirable to merge configurations of your WSL and Windows SSH. 
+For example if you receive your certificates by running a command from within WSL but you want your VSCode to connect to the same server.
+One option would be to copy the entire SSH configuration directory from WSL to Windows, however, to avoid copying it every time we can create a symbolic link.
+
+Please note that the right way would be to create a symbolic link *from Windows to WSL* and not the other way around. 
+The reason is that linux SSH is strict about having the right permissions set on private key file; and if the master copy of the file resides on Windows file system, then WSL while being able to see the file, cannot change Linux permissions on it.
+At the same time this rule doesn't apply to Windows SSH client.
+
+In order to link your SSH directories:
+1. Figure out Windows path to your SSH configuration directory. In your WSL shell, type:
+```
+$ cd ~/.ssh
+$ explorer.exe .
+```
+2. In explorer Window press `Control+L` and save somewhere full path to WSL SSH configuration directory. It would look something like:
+```
+\\wsl$\Ubuntu\home\tony\.ssh
+```
+3. In Windows command prompt type the following lines (remember to replace WSL path in the last command with actual path you got from the previous step):
+```
+> cd C:\Users\%USERNAME%
+> rename .ssh .ssh.bak
+> mklink /d .ssh \\wsl$\Ubuntu\home\tony\.ssh
+```
+
+Please note that if you use advanced SSH features, it might not be possible to share the entire directory completely due to, for example, path differences in Windows and WSL. In this case you can resort to symlinking individual files using the same `mklink` command.
+
+### SSH authentication
+
+SSH supports many different authentication algorithms. 
+But the one that seems to be used most often is public key authentication. To learn more about it, here is a [good tutorial](https://www.digitalocean.com/community/tutorials/how-to-set-up-ssh-keys-2).
+
+Quick recap of public key authentication:
+* You can find your private and public keys in your `.ssh` directory. They would appear as pairs of files having the same name but different extension: public key has `.pub` extension, but private key has no extension. For example, I have `id_rsa` and `id_rsa.pub`.
+* In WSL your private key must have certain permissions, so that it is not readable by anyone except yourself. 
+* You can check permissions by typing:
+    ```
+    $ ls -l id_rsa
+    -r-x------ 1 tony tony 20 Sep 18 11:47 id_rsa
+    ```
+    This `-r-x------` string represents Linux permissions and your permissions should be the same.
+* If your permissions are different or if SSH complains about permissions of this file, execute:
+    ```
+    $ chmod 600 id_rsa
+    ```
+
+### SSH agent
+
+Many companies require you to generate a passphrase for your SSH keys. 
+This way every time you try to use said keys, SSH client would ask you for passpharse.
+Alternatively, you can load your key into SSH agent, and in this case the agent would ask you for passphrase and when you type it in, it would provide the key to the application in a secure manner.
+
+You might want to consider using SSH agent in two scenarios:
+* You need to use one of the tools mentioned in sections above. Many tools can talk to SSH agent.
+* You are simply tired of typing passphrase too often.
+
+To learn how to set up SSH agent on Windows, please read " User key generation" section [here](https://learn.microsoft.com/en-us/windows-server/administration/openssh/openssh_keymanagement).
+
+Also, keep in mind that Windows SSH agent is completely different from Linux SSH agent in WSL, and generally WSL apps cannot talk to Windows agent and vice versa.
+It is possible to run Windows agent and Linux agent in WSL at the same time.
+
+### Port forwarding
+Port forwarding, also known as tonneling, is a very useful feature of SSH that you can make use of in order to work around certain restrictions.
+For example, if you want to configure samba server, but samba port is blocked by your admin, you can still use samba in the following way:
+1. Configure samba server on your Linux host.
+2. [Disable file sharing](https://support.microsoft.com/en-us/topic/disable-file-and-printer-sharing-for-additional-security-3713fb7e-7c34-e60a-01f4-20f34ba38154#:~:text=the%20exposed%20adapter%3A-,Click%20Start%2C%20point%20to%20Settings%2C%20click%20Control%20Panel%2C%20and,Restart%20your%20computer.) on your local Windows computer in order to free up default samba port.
+3. When connecting to your linux server pass additional option to your SSH command: `-L 445:localhost:445`, so that your SSH command would look something like:
+```
+$ ssh -L 445:localhost:445 user@server.domain.com
+```
+4. Now you can try to open explorer and enter `\\localhost` in the address bar to connect to samba server on your Linux server.
+
+What really happens here is that explorer tries to connect to SMB server on `localhost` on port 445, which happens to be open, but any data that is sent to this port is forwarded by SSH client to your Linux server, port 445, where you hopefully successfully set up samba server. All replies are forwarded back as well, so your explorer would be talking to remote samba server without having a faintest idea .
+
+Port forwarding can also be useful when some service on your Linux server can only be connected to from that server and you might want to circumvent this restriction.
+
+Here is a [good tutorial on port forwarding](https://help.ubuntu.com/community/SSH/OpenSSH/PortForwarding).
+
+### Keep alive flag
+
+If your server tends to disconnect after certain amount of time, it is possible to make SSH client to send keep alive packets every minute or two.
+[This page](https://stackoverflow.com/questions/25084288/keep-ssh-session-alive) offers a few ways to set it up.
