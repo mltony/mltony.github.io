@@ -176,13 +176,13 @@ With this configuration you can type a command and then run it with `F12` instea
 
 ### Ignoring timestamps
 
-If you are working with Linux backend software, chances are you might have to read server logs, where each line starts with a timestamp. 
+If you are working with Linux backend software, chances are you might have to read server logs, where each line starts with a timestamp.
 It is very inconvenient to listen to those timestamps, so it is probably a good idea to filter them out from NVDA speech.
 
 You can do that via [Phonetic Punctuation](https://github.com/mltony/nvda-phonetic-punctuation/) NVDA add-on.
 Just configure an audio-rule with regular expression capturing your timestamp and you can replace timestamps with a quick earcon sound.
 
-## Accessing and editing remote files 
+## Accessing and editing remote files
 
 When working with a large project, chances are you would want your source code to reside on Linux server so that you can build and run it. This poses a question: how to edit files that are located on a Linux server? There are many options to choose from, each of them having their own pros and cons.
 
@@ -213,7 +213,7 @@ In general the advantage of SFTP clients is that they tend to work very reliably
 
 [SSHFS](https://github.com/libfuse/sshfs) is a popular Linux tool that allows you to mount file system of a remote machine locally. It doesn't work on Windows, however, there are a few good alternatives for Windows:
 
-* [SSHFS-win](https://github.com/winfsp/sshfs-win) is a Windows port of SSHFS and it is fully accessible -since it can be fully configured from command line. I recommend to start with it since it tends to work well for me. Excellent documentation on its github page. Its main downside is limited options for SSH authentication: it only supports password authentication and key-based authentication without passphrase. 
+* [SSHFS-win](https://github.com/winfsp/sshfs-win) is a Windows port of SSHFS and it is fully accessible -since it can be fully configured from command line. I recommend to start with it since it tends to work well for me. Excellent documentation on its github page. Its main downside is limited options for SSH authentication: it only supports password authentication and key-based authentication without passphrase.
 
 * [RClone](https://rclone.org/) positions itself as file synchronization tool, however among other features it can also mount remote SFTP drives. For more information, check out its [mount command](https://rclone.org/commands/rclone_mount/). It is also fully accessible and can be configured straight from command line. It appears that it can integrate with Windows SSH agent for passpharse key authentication, however, I can't speak about accessibility of that solution. Downside: RClone appears to be pretty slow compared to other SSHFS solutions.
 
@@ -227,22 +227,89 @@ Please follow [these instructions](https://tanat44.github.io/post/2021-09-13-wsl
 
 ### Configuring Samba/SMB server
 
-This option is again only for those who are not afraid of configuring Linux servers. 
+This option is again only for those who are not afraid of configuring Linux servers.
 SMB is a network file protocol used for Windows file sharing - that is when you type address like `\\host_name\share_name\file.txt` - under the hood you are requesting a file over SMB.
 Samba is an open-source implementation of SMB server and client.
 
 Here is a good [samba tutorial for Debian/Ubuntu](https://ubuntu.com/tutorials/install-and-configure-samba) - or you can find another tutorial for your favorite  flavor of Linux.
-### Notepad++ 
 
-Notepad++ has [NppFTP](https://ashkulz.github.io/NppFTP/) plugin that supports many protocols, including SFTP. So in theory it should allow editing files directly on remote Linux server. However, I found its configuration window to be not accessible with NVDA, so sighted help will be required to configure it.
+Please note that SMB typically runs over port 445 and you would need to make sure that access to this port is not blocked in whatever datacenter your Linux server is located. Often times it is blocked due to security reasons. If this is the case, please check out a section below on how to work around this by setting up SSH tonnels.
 
-### rsync
+### Notepad++
 
+Notepad++ has [NppFTP plugin](https://ashkulz.github.io/NppFTP/) that supports many protocols, including SFTP. So in theory it should allow editing files directly on remote Linux server. However, I found its configuration window to be not accessible with NVDA, so sighted help will be required to configure it.
 
-## Other tricks
+### File synchronization tools: rsync, syncthing, Dropbox and others
+
+I don't recommend this approach, since any changes to local copy will propagate to the server with some delay.
+In practice this often creates confusion, e.g. when you build a binary but the most recent changes have not yet propagated to the server by the time build was started.
+But if all other fails, this might still be the best option available.
+
+The main idea is that we will keep two copies of your source code repository: one on Linux server and the other one locally on your Windows computer. Then we make sure that both copies are identical using one of these tools:
+
+* rsync - is a well-known Unix file synchronization tool. You would need to install rsync client on your Windows computer (either from cygwin or from WSL) and have it synchronize with Linux server using either SFTP protocol, or preferrably via rsync protocol; the latter option would require you to set up rsync server on Linux server, but then it would run much faster. You can also consider writing a script that would kcik off synchronization on rsync client side in an infinite loop.
+
+* Dropbox, Google Drive, an many other competitors offer file synchronization services. You would need to install their clients on both Windows and Linux sides and they would automatically sync contents of their folders with the cloud and with each other.
+
+* [Syncthing](https://syncthing.net/) is another open-source file sync solution that uses peer-to-peer protocol to synchronized files.
+
+## Other useful tricks
+
 ### Clipboard pasting
+
+It happens that the standard `Control+V` command doesn't work with SSH. Command prompt offers "Paste" command in its context menu, but it is hard to navigate to.
+
+As a workaround I implemented `Control+V` feature in my Console toolkit add-on for NVDA. Simply install the add-on, and `Control+V` would work for pasting in both Command Prompt and PuTTY.
+
 ### Editing command line
-### Other features of Console Toolkit
+
+Editing commands right inside bash prompt in SSH can be tedious, because navigation by word does not work the way NVDA expects and as a result NVDA would often announce the same word multiple times when pressing `Control+LeftArrow/RightArrow`.
+
+In order to work around this, I came up with an accessible command editor feature in my Console Toolkit add-on.
+Just press `NVDA+E` to open current command in a fully accessible window.
+After editing you can either press `Escape` to update it in SSH window, or alternatively, press `Enter` to execute it right away.
+
 ### tmux
 
-## Appendix: SSH for dummies
+In addition to all tricks mentioned above, it would probably be a good idea to learn using tmux within SSH session. Tmux stands for terminal multiplexer, and its two key features are:
+* Persistence: your bash session or sessions will survive even after you disconnect.
+* Multiplexing: you can have 10 or even more sessions within a single SSH connection and you can switch between them using `Control+B`, followed by 0-9 digit.
+
+If you are new to tmux, you can read any tutorial, like for example [this one](https://leimao.github.io/blog/Tmux-Tutorial/).
+
+Let me describe my tmux configuration that makes tmux more screenreader-friendly.
+
+on the very bottom of tmux screen there is status line, that displays things like window name and clock. 
+I find status line useless and given the fact that NVDA often catches seconds ticking in the status line - even annoying.
+So it's a good idea to turn it off completely, by running:
+```
+$ tmux status off
+```
+Or, alternatively, you can add the following line to your `~/.tmux.conf` file:
+```
+set -g status off
+```
+
+But without status it would be hard to figure out the index of current window.
+To address this we can change bash prompt to include window number.
+Add these lines to your bash configuration:
+```
+export TMUX_WINDOW=$(tmux display-message -p '#I')
+export PS1="tmux${TMUX_WINDOW}) "
+```
+
+Another useful key binding is clearing screen. 
+In bash you can clear screen by presssing `Control+L`, however it won't work when you are inside an interactive program, such as Python interpreter.
+So you can set key binding in tmux to still clear screen on `Control+L`; add the following line to your `.tmux.conf` file:
+```
+bind -n C-l send-keys -R \; send-keys C-l \; clear-history
+```
+
+
+Note: There is one downside of using tmux compared to simple SSH session. 
+When your command produces more than one screen of output, the first lines of output disappear from console completely, and even if you can access off-screen lines via your review cursor you won't find them there.
+This is just the way tmux works.
+You can still access first lines in tmux buffer by pressing `Control+B PageUp`, which is less convenient than review cursor.
+However, given all possible ways to capture command output that I listed in this note above, the advantages of tmux sure enough outweigh this downside.
+
+### Appendix: SSH for dummies
