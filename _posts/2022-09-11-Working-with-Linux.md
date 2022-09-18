@@ -229,12 +229,12 @@ Please follow [these instructions](https://tanat44.github.io/post/2021-09-13-wsl
 ### Configuring Samba/SMB server
 
 This option is again only for those who are not afraid of configuring Linux servers.
-SMB is a network file protocol used for Windows file sharing - that is when you type address like `\\host_name\share_name\file.txt` - under the hood you are requesting a file over SMB.
+SMB (also known as CIFS) is a network file protocol used for Windows file sharing - that is when you type address like `\\host_name\share_name\file.txt` - under the hood you are requesting a file over SMB.
 Samba is an open-source implementation of SMB server and client.
 
 Here is a good [samba tutorial for Debian/Ubuntu](https://ubuntu.com/tutorials/install-and-configure-samba) - or you can find another tutorial for your favorite  flavor of Linux.
 
-Please note that SMB typically runs over port 445 and you would need to make sure that access to this port is not blocked in whatever datacenter your Linux server is located. Often times it is blocked due to security reasons. If this is the case, please check out a section below on how to work around this by setting up SSH tonnels.
+Please note that SMB typically runs over port 445 and you would need to make sure that access to this port is not blocked in whatever datacenter your Linux server is located. Often times it is blocked due to security reasons. If this is the case, there is a [workaround](https://superuser.com/questions/1094931/ssh-tunnel-on-windows-10-to-linux-samba), but it requires a lot of tinkering, so only do it if you know what you're doing.
 
 ### Notepad++
 
@@ -313,7 +313,7 @@ This is just the way tmux works.
 You can still access first lines in tmux buffer by pressing `Control+B PageUp`, which is less convenient than review cursor.
 However, given all possible ways to capture command output that I listed in this note above, the advantages of tmux sure enough outweigh this downside.
 
-### Appendix: SSH for dummies
+## Appendix: SSH for dummies
 
 This is not SSH tutorial. If you are new to SSH, please find a tutorial on the Internet. This section describes some features of SSH that might come in quite handy when using SSH with a screenreader.
 
