@@ -389,18 +389,10 @@ It is possible to run Windows agent and Linux agent in WSL at the same time.
 
 ### Port forwarding
 Port forwarding, also known as tonneling, is a very useful feature of SSH that you can make use of in order to work around certain restrictions.
-For example, if you want to configure samba server, but samba port is blocked by your admin, you can still use samba in the following way:
-1. Configure samba server on your Linux host.
-2. [Disable file sharing](https://support.microsoft.com/en-us/topic/disable-file-and-printer-sharing-for-additional-security-3713fb7e-7c34-e60a-01f4-20f34ba38154#:~:text=the%20exposed%20adapter%3A-,Click%20Start%2C%20point%20to%20Settings%2C%20click%20Control%20Panel%2C%20and,Restart%20your%20computer.) on your local Windows computer in order to free up default samba port.
-3. When connecting to your linux server pass additional option to your SSH command: `-L 445:localhost:445`, so that your SSH command would look something like:
-```
-$ ssh -L 445:localhost:445 user@server.domain.com
-```
-4. Now you can try to open explorer and enter `\\localhost` in the address bar to connect to samba server on your Linux server.
+Here are typical use cases:
 
-What really happens here is that explorer tries to connect to SMB server on `localhost` on port 445, which happens to be open, but any data that is sent to this port is forwarded by SSH client to your Linux server, port 445, where you hopefully successfully set up samba server. All replies are forwarded back as well, so your explorer would be talking to remote samba server without having a faintest idea .
-
-Port forwarding can also be useful when some service on your Linux server can only be connected to from that server and you might want to circumvent this restriction.
+* Certain port is blocked by network administrators. E.g. if port 445 for SMB service is blocked you can still work around it by tonneling port 445 over SSH.
+* Certain applications accept local connections only. E.g. docker container can be configured in such a way that you can only connect to it from physical Linux server. 
 
 Here is a [good tutorial on port forwarding](https://help.ubuntu.com/community/SSH/OpenSSH/PortForwarding).
 
