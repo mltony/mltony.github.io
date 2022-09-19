@@ -393,6 +393,7 @@ Here are typical use cases:
 
 * Certain port is blocked by network administrators. E.g. if port 445 for SMB service is blocked you can still work around it by tonneling port 445 over SSH.
 * Certain applications accept local connections only. E.g. docker container can be configured in such a way that you can only connect to it from physical Linux server. 
+* You want some program to connect from Linux server back to your Windows computer, but direct connection is blocked by network administrators.
 
 Here is a [good tutorial on port forwarding](https://help.ubuntu.com/community/SSH/OpenSSH/PortForwarding).
 
