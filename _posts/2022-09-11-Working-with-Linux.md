@@ -362,15 +362,15 @@ Quick recap of public key authentication:
 * You can find your private and public keys in your `.ssh` directory. They would appear as pairs of files having the same name but different extension: public key has `.pub` extension, but private key has no extension. For example, I have `id_rsa` and `id_rsa.pub`.
 * In WSL your private key must have certain permissions, so that it is not readable by anyone except yourself. 
 * You can check permissions by typing:
-    ```
-    $ ls -l id_rsa
-    -r-x------ 1 tony tony 20 Sep 18 11:47 id_rsa
-    ```
-    This `-r-x------` string represents Linux permissions and your permissions should be the same.
+```
+$ ls -l id_rsa
+-r-x------ 1 tony tony 20 Sep 18 11:47 id_rsa
+```
+This `-r-x------` string represents Linux permissions and your permissions should be the same.
 * If your permissions are different or if SSH complains about permissions of this file, execute:
-    ```
-    $ chmod 600 id_rsa
-    ```
+```
+$ chmod 600 id_rsa
+```
 
 ### SSH agent
 
