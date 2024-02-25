@@ -41,3 +41,5 @@ defaults:
       type: post
     values:
       tags: Other
+
+markdown: GFM
