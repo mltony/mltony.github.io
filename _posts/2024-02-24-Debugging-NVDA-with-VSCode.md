@@ -17,7 +17,7 @@ Why do we need to debug in VMWare? Welll once your program - NVDA in this case -
 ## Steps
 ### 1. Get Microsoft Windows 10 ISO file
     We will download a copy of Microsoft Windows 10 directly from Microsoft. Apparently authorization key is not needed to run it, although it will bug you to enter authorization key every now and then.
-    1. Go to [https://www.microsoft.com/software-download/windows10](https://www.microsoft.com/software-download/windows10).
+    1. Go to [Windows 10 website](https://www.microsoft.com/software-download/windows10).
     2. Click Download now.
     3. Run it and tell it to create an installation media. Select "Create DVD" as media type and save  it on the computer.
     4. Don't burn the iso file on the dvd.
@@ -29,7 +29,7 @@ Why do we need to debug in VMWare? Welll once your program - NVDA in this case -
     4. Choose all default options and proceed with creating VM.
     5. Start VM.
 
-### 3. Quidck VMWare primer
+### 3. Quick VMWare primer
     For anyone who hasn't played with virtual machines:
     1.Virtualization terms:
         * Host OS - your current Windows installation - that is operating system running on your hardware.
@@ -96,7 +96,7 @@ Why do we need to debug in VMWare? Welll once your program - NVDA in this case -
     14. Now in your guest OS drive `H:` should be available and should be identical to your host drive `H:`.
     15. Whenever you restart your guest OS, you will need to execute `subst` commands mentioned above again.
 
-### 7. Install NVDA in guest OS
+### 7. Installing NVDA in guest OS
     Now use your shared `H:` drive to get a copy of NVDA and install it. I recommend to create a portable copy from your host NVDA on `H:` drive and then in guest OS run that portable copy and install it.
     If you get an error message complaining that file `NVDA_slave.exe` not found - try to copy your NVDA to local guest drive `C:` first. The thing is that because Windows is such an amazing operating system, the `subst` command that we ran earlier only creates a new drive for the user running in normal mode, not in administrator mode, and NVDA installer runs as administrator and so it's unable to see that substituted drive.
 
