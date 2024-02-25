@@ -17,32 +17,35 @@ Why do we need to debug in VMWare? Welll once your program - NVDA in this case -
 ## Steps
 ### 1. Get Microsoft Windows 10 ISO file
     We will download a copy of Microsoft Windows 10 directly from Microsoft. Apparently authorization key is not needed to run it, although it will bug you to enter authorization key every now and then.
-    1. Go to https://www.microsoft.com/software-download/windows10
-    2. Click Download now
+    1. Go to [https://www.microsoft.com/software-download/windows10](https://www.microsoft.com/software-download/windows10).
+    2. Click Download now.
     3. Run it and tell it to create an installation media. Select "Create DVD" as media type and save  it on the computer.
     4. Don't burn the iso file on the dvd.
+
 ### 2. Set up VMWare Player virtual machine
-    1. Install vmware player
-    2. Go to File > Create virtual machine
-    3. Select ISO file created in the previous section
+    1. Install vmware player.
+    2. Go to File > Create virtual machine.
+    3. Select ISO file created in the previous section.
     4. Choose all default options and proceed with creating VM.
-    5. Start VM
+    5. Start VM.
+
 ### 3. Quidck VMWare primer
     For anyone who hasn't played with virtual machines:
     1.Virtualization terms:
         * Host OS - your current Windows installation - that is operating system running on your hardware.
-        * Guest OS - what you are about to install, that is operating system running inside VMWare player
+        * Guest OS - what you are about to install, that is operating system running inside VMWare player.
     2. In order to switch to guest OS (or in other words, capture input), press `Control+Alt+Enter`. Sometimes you need to press it twice.
     3. In order to switch back to host OS, press `Control+Alt`.
     4. By default guest OS is not running a screenreader. SO a good way to check that you're in is by pressing e.g. `Alt+Tab` - if your input is captured, you won't hear any speech feedback.
+
 ### 4. Installing Windows
-    1. Switch to guest OS
+    1. Switch to guest OS.
     2. Verify that you're in by pressing `Alt+Tab` - if no speech then you're in.
-    2. Turn on narrator by pressing `Control+Windows+Enter`
-    3. Proceed with setup using defrault options. 
+    2. Turn on narrator by pressing `Control+Windows+Enter`.
+    3. Proceed with setup using default options.
     4. Specify that you don't have license key.
     5. Select "Windows 10 Pro" as the operating system to install.
-    6. Select Custom as installation type (as opposed to upgrade)
+    6. Select Custom as installation type (as opposed to upgrade).
     7. Select the only drive available in the table for installation.
     8. Proceed with installation and copying files step. This step takes less  than 10 minutes on a reasonably modern modest PC.
     9. While installation is running, you can try `NVDA+R` to OCR the contents of the entire window - sometimes it gives you an idea what it is working on when guest narrator is not running.
@@ -56,6 +59,7 @@ Why do we need to debug in VMWare? Welll once your program - NVDA in this case -
     13. When it prompts for your email address, I recommend to use an offline account, but I would think that online account would work too, so use your best judgement.
     14. Keep selecting default options until installation is complete.
     15. You can tell that the installation is complete when `Windows` key brings up start menu.
+
 ### 5. Installing VMWare tools
     VMWare tools provide better integration between guest and host systems. In particular shared clipboard and shared folders are two features that we definitely need.
     1. In VMWare player navigate to Menu > Install VMWare Tools
