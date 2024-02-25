@@ -62,10 +62,11 @@ Why do we need to debug in VMWare? Welll once your program - NVDA in this case -
 
 ### 5. Installing VMWare tools
     VMWare tools provide better integration between guest and host systems. In particular shared clipboard and shared folders are two features that we definitely need.
-    1. In VMWare player navigate to Menu > Install VMWare Tools
-    3. In guest OS, press `Windows+R` and run `D:\setup64.exe`. 
+    1. In VMWare player navigate to Menu > Install VMWare Tools.
+    3. In guest OS, press `Windows+R` and run `D:\setup64.exe`.
     4. Proceed with installation. Select "Typical installation" if prompted.
     5. Restart guest OS as requested by VMWare Tools installer.
+
 ### 6. Setting up shared drive
     Important note! In order to make debugging easier, it is very convenient to have yourdevelopment NVDA repository accessible via the same path in both host and guest OS's. This can be easily done by mapping drives. For example, on your host OS, you can run:
     * `subst H: C:\Users\tony` which would map drive `H:` to my home directory - obviously replace `tony` with  your username.
@@ -76,7 +77,7 @@ Why do we need to debug in VMWare? Welll once your program - NVDA in this case -
     2. Switch to options tab.
     3. In the list view select Shared folders.
     4. Select "Always enabled".
-    5. Check "Map as a network drive in Windows guests"
+    5. Check "Map as a network drive in Windows guests".
     6. Click "Add".
     7. Select `H:\` as host path and select `H:` as guest drive name.
     8. Press OK.
@@ -87,20 +88,23 @@ Why do we need to debug in VMWare? Welll once your program - NVDA in this case -
         subst H: "\\vmware-host\Shared Folders\H"
         ```
         Be sure to have the second argument in quotes, since share name contains a whitespace.
-    12. Open command line in administrator mode in guest OS. E.g. Press `Windows+R`, then type cmd and press `Control+windows+Shift+Enter`
+    12. Open command line in administrator mode in guest OS. E.g. Press `Windows+R`, then type cmd and press `Control+windows+Shift+Enter`.
     13. Run the same command there to also make H: available in Administrator mode.
         ```
         subst H: "\\vmware-host\Shared Folders\H"
         ```
     14. Now in your guest OS drive `H:` should be available and should be identical to your host drive `H:`.
     15. Whenever you restart your guest OS, you will need to execute `subst` commands mentioned above again.
+
 ### 7. Install NVDA in guest OS
     Now use your shared `H:` drive to get a copy of NVDA and install it. I recommend to create a portable copy from your host NVDA on `H:` drive and then in guest OS run that portable copy and install it.
     If you get an error message complaining that file `NVDA_slave.exe` not found - try to copy your NVDA to local guest drive `C:` first. The thing is that because Windows is such an amazing operating system, the `subst` command that we ran earlier only creates a new drive for the user running in normal mode, not in administrator mode, and NVDA installer runs as administrator and so it's unable to see that substituted drive.
+
 ### 8. Create developer environment in guest OS
-    Follow NVDA's [Create dev environment](https://github.com/nvaccess/nvda/blob/master/projectDocs/dev/createDevEnvironment.md) document. 
+    Follow NVDA's [Create dev environment](https://github.com/nvaccess/nvda/blob/master/projectDocs/dev/createDevEnvironment.md) document.
     * If you already have an up-to-date git repository cloned in your `H:` drive, no need to clone it again.
     * However other dependencies, such as Python and Visual Studio need to be installed again in guest OS.
+
 ### 9. Install some other software you might need
     This step is optional, but you might want to install some software inside guest OS. An easy way to do that is using `choco`:
     1. Install `choco` by following [Choco installation guide](https://chocolatey.org/install) - really it's just a single command to be executed in administrator PowerShell.
@@ -109,12 +113,14 @@ Why do we need to debug in VMWare? Welll once your program - NVDA in this case -
         choco install /y notepadplusplus  googlechrome
         ```
         or any other software that you need.
+
 ### 10. Disable firewall on guest OS
     1. In guest OS go to start menu > firewall. This opens settings window.
     2. In the list view select "Firewall & network protection".
-    3. Select Domain network
+    3. Select Domain network.
     4. Under Microsoft Defender Firewall, switch the setting to Off.
     5. Also turn off firewall for Private networks and public networks.
+
 ### 11. Assign a static IP address to your guest OS (optional)
     VMWare likes to change IP address of guest OS every day, which is very annoying. If you don't want to be checking your IP daily and updating it in VSCode json file, let's assign a static one.
     1. On your host OS, go to VMWare player > Menu > Manage > Virtual Machine Settings...
@@ -135,16 +141,17 @@ Why do we need to debug in VMWare? Welll once your program - NVDA in this case -
         ```
         subnet 192.168.52.0 netmask 255.255.255.0 {
         ```
-
     7. Restart VMware DHCP service. Run the following commands in administrator command prompt or PowerShell:
         ```
         net stop vmnetdhcp
         net start vmnetdhcp
         ```
+
 ### 12. Disable guest OS sleep mode
     I find it pretty annoying when guest OS enters standby mode after an hour or so. So to avoid that:
     1. In start menu go to "Power and sleep settings".
     2. In "Put my device to sleep after" select Never.
+
 ### 13. Set up debugger config.
     Steps in this section are slightly modified from  [VSCode debugging link](https://code.visualstudio.com/docs/python/debugging), specifically from "Debugging by attaching over a network connection" section.
     2. In guest oS, in `cmd` run the following command:
@@ -190,6 +197,15 @@ Why do we need to debug in VMWare? Welll once your program - NVDA in this case -
             ]
         }
         ```
+    8. Alternatively, if you are reading this post many years later - perhaps the format of `launch.json` file has changed in VSCode since 2024 - you can create your own debugging configuration like this:
+        * Press `control+shift+d`
+        * Press `NVDA+NumPad6` to go to next element using review cursor - for some reason focus won't go there if you tab.
+        * Press `NVDA+shift+NumPadMinus` to bring focus to that combo box.
+        * Expand combo box and select "Add configuration".
+        * Select "Python debugger".
+        * Select "Remote attach" - or any other option if you know what you're doing.
+        * Specify host and port of your VMWare instance.
+        * Then VSCode will create a new entry in your `launch.json` file that you can edit yourself as needed.
     8. Open `H:\nvda\requirements.txt` and add the following line in the very end:
         ```
         debugpy
@@ -210,11 +226,13 @@ Why do we need to debug in VMWare? Welll once your program - NVDA in this case -
             debugpy.wait_for_client()
             debugpy.breakpoint()
         ```
+
 ### 14. Finally, let's debug something!
     1. In guest OS run `runnvda.bat`. Screenreader will try to start up but will wait for the debugger to attach.
     2. Now switch back to host OS and in VSCode press F5. You should hear "debugging started". Then the cursor will be taken to the line immediately after breakpoint in `nvda.pyw`.
     3. Now once you're sure you are connected you can press F5 again to let guest NVDA to start up. You'll hear NVDA startup sound from guest OS.
     4. Have fun! For example, try setting a breakpoint in `def speak` function in `speech\speak.py` and see who's calling it.
+
 ### 15. VSCode debugging primer
     If you are not familiar with debugging in VSCode, read some tutorials, for example [this one](https://code.visualstudio.com/docs/editor/debugging).
     As for accessibility, the only thing to be aware of is that current execution line are not being indicated to the screenreader users in any way. So here are some tips for blind debugging from me:
