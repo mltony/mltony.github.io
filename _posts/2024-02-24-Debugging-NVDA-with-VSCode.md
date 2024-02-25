@@ -147,7 +147,7 @@ VMWare likes to change IP address of guest OS every day, which is very annoying.
     net start vmnetdhcp
     ```
 
-### 12. Disable guest OS sleep mode
+### 12. Disable guest OS sleep mode (optional)
 I find it pretty annoying when guest OS enters standby mode after an hour or so. So to avoid that:
 1. In start menu go to "Power and sleep settings".
 2. In "Put my device to sleep after" select Never.
