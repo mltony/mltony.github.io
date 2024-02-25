@@ -1,3 +1,9 @@
+---
+layout: post
+title: "Debugging NVDA with VSCode"
+date:  2024-02-24
+categories: debug python NVDA VSCode
+---
 # Debugging NVDA with VSCode
 I've recently spent some time debugging NVDA code while implementing some new features. And I thought I'd share my setup - maybe someone will find this useful. Here I'll describe how to debug NVDA running on a virtual machine inside VMWare Player, but these instructions are applicable to debugging any python application in general.
 
