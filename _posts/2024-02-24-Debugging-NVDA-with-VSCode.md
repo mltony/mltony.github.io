@@ -154,17 +154,18 @@ I find it pretty annoying when guest OS enters standby mode after an hour or so.
 
 ### 13. Set up debugger config.
 Steps in this section are slightly modified from  [VSCode debugging link](https://code.visualstudio.com/docs/python/debugging), specifically from "Debugging by attaching over a network connection" section.
-2. In guest oS, in `cmd` run the following command:
+
+1. In guest oS, in `cmd` run the following command:
     ```
     ipconfig
     ```
-3. In its output find IPv4 address of your guest OS. Look for the line that looks something like:
+2. In its output find IPv4 address of your guest OS. Look for the line that looks something like:
     ```
     IPv4 Address. . . . . . . . . . . : 192.168.52.10
     ```
     In this case my IP address is 192.168.52.10. If you set up static IP address in the previous steps, you should see it here.
-4. Switch back to host OS.
-5. In `cmd` in your host OS run:
+3. Switch back to host OS.
+4. In `cmd` in your host OS run:
     ```
     ping 192.168.52.10
     ```
@@ -173,8 +174,8 @@ Steps in this section are slightly modified from  [VSCode debugging link](https:
     Reply from 192.168.52.10: bytes=32 time<1ms TTL=128
     ```
     If you see `Request timed out.` instead - then most likely your firewall on the guest OS is still blocking some connections. Or alternatively, your virtual machine might have changed IP address.
-6. Now open your VSCode still on the host OS.
-7. Open command palette (`Control+Shift+P`) and type "open launch.json". Paste the following content there replacing your IP address and local and remote paths as needed:
+5. Now open your VSCode still on the host OS.
+6. Open command palette (`Control+Shift+P`) and type "open launch.json". Paste the following content there replacing your IP address and local and remote paths as needed:
     ```
     {
         "version": "0.2.0",
@@ -197,7 +198,7 @@ Steps in this section are slightly modified from  [VSCode debugging link](https:
         ]
     }
     ```
-8. Alternatively, if you are reading this post many years later - perhaps the format of `launch.json` file has changed in VSCode since 2024 - you can create your own debugging configuration like this:
+7. Alternatively, if you are reading this post many years later - perhaps the format of `launch.json` file has changed in VSCode since 2024 - you can create your own debugging configuration like this:
     * Press `control+shift+d`
     * Press `NVDA+NumPad6` to go to next element using review cursor - for some reason focus won't go there if you tab.
     * Press `NVDA+shift+NumPadMinus` to bring focus to that combo box.
@@ -214,7 +215,7 @@ Steps in this section are slightly modified from  [VSCode debugging link](https:
     ```
     venvUtils\venvCmd.bat python -m pip install --upgrade  debugpy
     ```
-8. Open `H:\nvda\source\nvda.pyw`. Find the lines where it calls `core.main()` that look something like this:
+9. Open `H:\nvda\source\nvda.pyw`. Find the lines where it calls `core.main()` that look something like this:
     ```
     try:
         import core
