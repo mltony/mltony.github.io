@@ -210,6 +210,10 @@ Steps in this section are slightly modified from  [VSCode debugging link](https:
     ```
     debugpy
     ```
+    Alternatively, if you don't want to modify `requirements.txt` for whatever reason, you can also add this package by executing:
+    ```
+    venvUtils\venvCmd.bat python -m pip install --upgrade  debugpy
+    ```
 8. Open `H:\nvda\source\nvda.pyw`. Find the lines where it calls `core.main()` that look something like this:
     ```
     try:
@@ -235,11 +239,11 @@ Steps in this section are slightly modified from  [VSCode debugging link](https:
 
 ### 15. VSCode debugging primer
 If you are not familiar with debugging in VSCode, read some tutorials, for example [this one](https://code.visualstudio.com/docs/editor/debugging).
-As for accessibility, the only thing to be aware of is that current execution line are not being indicated to the screenreader users in any way. So here are some tips for blind debugging from me:
-* For current execution line I haven't found a good way to figure out where it is. You may press `F10` to step over, then you'll figure out what's the next line, but that changes execution state. Other than that I guess you just need to remember at what line your program is currently paused.
+Here are some tips for blind debugging from me:
+* In order to figure out current execution line, there is a built-in command "Navigate to Top of Call Stack". You can either execute it through command palette, or alternatively, assign a shortcut key for it, more on that below.
 * When your cursor enters a line with a breakpoint, VSCode will play an earcon. Same thing happens when breakpoint is hit during execution.
 * To check value of a variable, press `Control+K control+i`. This only works for local variables.
-* For object fields and for any other arbitrary expressions, you can add them to watch list:
+* For object fields and for almost any other arbitrary expressions, you can add them to watch list:
     1. Select desired variable or expression.
     2. In command palette (`control+shift+p`) type "Add to watch"
     3. To view your watch variables, in command palette type "Focus on watch view".
@@ -272,6 +276,14 @@ As for accessibility, the only thing to be aware of is that current execution li
                 "key": "ctrl+shift+1",
                 "command": "editor.debug.action.selectionToWatch"
             },
+            {
+                "key": "ctrl+shift+2",
+                "command": "copyFilePath",
+            },
+            {
+                "key": "win+f9",
+                "command": "workbench.action.debug.callStackTop"
+            }
         ]
         ```
 
