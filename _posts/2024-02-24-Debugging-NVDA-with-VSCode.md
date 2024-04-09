@@ -236,7 +236,11 @@ Steps in this section are slightly modified from  [VSCode debugging link](https:
 1. In guest OS run `runnvda.bat`. Screenreader will try to start up but will wait for the debugger to attach.
 2. Now switch back to host OS and in VSCode press F5. You should hear "debugging started". Then the cursor will be taken to the line immediately after breakpoint in `nvda.pyw`.
 3. Now once you're sure you are connected you can press F5 again to let guest NVDA to start up. You'll hear NVDA startup sound from guest OS.
-4. Have fun! For example, try setting a breakpoint in `def speak` function in `speech\speak.py` and see who's calling it.
+4. Kill NVDA watchdog. It seems to be causing problems when debugging, that is it would detect that NVDA core is frozen and attempt recovery, which interferes with IPC. Open NVDA python console (`NVDA+control+z`) and type:
+    ```
+    import watchdog; watchdog.terminate()
+    ```
+5 Have fun! For example, try setting a breakpoint in `def speak` function in `speech\speak.py` and see who's calling it.
 
 ### 15. VSCode debugging primer
 If you are not familiar with debugging in VSCode, read some tutorials, for example [this one](https://code.visualstudio.com/docs/editor/debugging).
